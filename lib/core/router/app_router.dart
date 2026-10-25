@@ -15,7 +15,6 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/agrimart/presentation/screens/agrimart_screen.dart';
 import '../../features/mandi_pricing/presentation/screens/mandi_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
-import '../../features/ai_doctor/presentation/screens/ai_doctor_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
 import '../../features/projects/presentation/screens/agri_projects_screen.dart';
 import '../../features/projects/presentation/screens/aquaculture_projects_screen.dart';
@@ -27,32 +26,12 @@ import '../../features/jobs/presentation/screens/jobs_screen.dart';
 import '../../features/opportunities/presentation/screens/opportunities_screen.dart';
 import '../../features/vendor/presentation/screens/vendor_dashboard_screen.dart';
 
-// Helper to convert Stream to Listenable for GoRouter
-import 'dart:async';
-
-class GoRouterRefreshStream extends ChangeNotifier {
-  late final StreamSubscription _subscription;
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
-  }
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
 /// GoRouter configuration with auth-aware redirects.
 final appRouterProvider = Provider<GoRouter>((ref) {
-  // Listen to the auth state notifier instead of just watching state to avoid rebuilding router instance
-  // Wait, Provider doesn't expose stream directly from a StateNotifier in Riverpod 2.0 without .stream
-  // But wait, using Riverpod 2, it's a Notifier. We don't have .stream out of the box unless we use AsyncNotifier or we just watch it.
-  // Actually, standard practice in Riverpod 2 is to watch it but return the SAME instance of GoRouter,
-  // OR we create the GoRouter instance using a ref.listen inside the redirect.
-  // Let's create it once and use a Listenable.
-  
+  // One router instance for the app's lifetime; auth changes re-run `redirect`
+  // through this listenable instead of rebuilding the router.
   final listenable = ValueNotifier<bool>(false);
+  ref.onDispose(listenable.dispose);
   
   ref.listen<AuthState>(
     authProvider,

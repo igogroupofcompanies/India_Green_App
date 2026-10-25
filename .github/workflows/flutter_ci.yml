@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.1'
+          flutter-version: '3.47.8'
           channel: 'stable'
+
+      - name: Create .env from example (bundled asset; real values are not in git)
+        run: cp -n .env.example .env
 
       - name: Install dependencies
         run: flutter pub get

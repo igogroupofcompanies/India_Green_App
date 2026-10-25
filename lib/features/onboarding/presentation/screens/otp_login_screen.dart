@@ -67,13 +67,13 @@ class _OtpLoginScreenState extends ConsumerState<OtpLoginScreen> {
   Future<void> _verifyOtp() async {
     if (_otpCtrl.text.length != 6) return;
 
-    await ref.read(authProvider.notifier).verifyOtp(
+    final needsProfile = await ref.read(authProvider.notifier).verifyOtp(
           _phoneCtrl.text.trim(),
           _otpCtrl.text.trim(),
         );
 
-    final authState = ref.read(authProvider);
-    if (authState.error == null && mounted) {
+    // Returning users are redirected home by the router once their profile loads.
+    if (needsProfile && mounted) {
       // OTP verified — navigate to user details, passing phone as GoRouter extra
       context.go(Routes.userDetails, extra: _phoneCtrl.text.trim());
     }

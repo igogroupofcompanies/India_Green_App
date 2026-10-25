@@ -55,23 +55,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               const Spacer(flex: 3),
               // Logo container
               Container(
-                width: 100,
-                height: 100,
+                width: 132,
+                height: 132,
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.harvestGold,
-                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: AppColors.harvestGold.withValues(alpha: 0.35),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.harvestGold.withValues(alpha: 0.4),
+                      color: AppColors.harvestGold.withValues(alpha: 0.25),
                       blurRadius: 30,
-                      spreadRadius: 5,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.spa_rounded,
-                  size: 56,
-                  color: AppColors.forestGreen,
+                child: Image.asset(
+                  'assets/images/logo_mark.png',
+                  fit: BoxFit.contain,
+                  semanticLabel: 'India Green App logo',
                 ),
               )
                   .animate()

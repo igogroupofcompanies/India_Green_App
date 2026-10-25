@@ -53,6 +53,7 @@ dependencies:
   # Fonts
   google_fonts: ^6.2.1
   supabase_flutter: ^2.14.2
+  sentry_flutter: ^10.2.0
 
 dev_dependencies:
   flutter_test:
@@ -75,3 +76,4 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+    - assets/images/

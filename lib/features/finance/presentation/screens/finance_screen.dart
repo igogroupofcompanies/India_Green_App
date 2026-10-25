@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+
+import '../../../../core/presentation/widgets/coming_soon_view.dart';
 
 class FinanceScreen extends StatelessWidget {
   const FinanceScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Farm Wallet & Loans'), backgroundColor: AppColors.forestGreen, foregroundColor: Colors.white),
-      body: const Center(child: Text('Finance features coming soon.')),
-    );
-  }
+  Widget build(BuildContext context) => const ComingSoonScaffold(
+      title: 'Farm Wallet & Loans', icon: Icons.account_balance_wallet_rounded);
 }

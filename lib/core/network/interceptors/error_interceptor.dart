@@ -1,28 +1,39 @@
 import 'package:dio/dio.dart';
 
+/// Retries transient failures of idempotent requests with a short back-off.
 class ErrorInterceptor extends Interceptor {
   final Dio _dio;
   static const _maxRetries = 2;
+  static const _retryKey = 'retry_count';
+  static const _idempotent = {'GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'};
 
   ErrorInterceptor(this._dio);
 
+  bool _isTransient(DioException err) =>
+      err.type == DioExceptionType.connectionTimeout ||
+      err.type == DioExceptionType.receiveTimeout ||
+      err.type == DioExceptionType.connectionError ||
+      (err.response?.statusCode ?? 0) >= 500;
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    final shouldRetry = err.type == DioExceptionType.connectionTimeout ||
-        err.type == DioExceptionType.receiveTimeout ||
-        (err.response?.statusCode ?? 0) >= 500;
+    final options = err.requestOptions;
+    final attempt = (options.extra[_retryKey] as int?) ?? 0;
 
-    if (shouldRetry) {
-      for (var i = 0; i < _maxRetries; i++) {
-        await Future.delayed(Duration(milliseconds: 500 * (i + 1)));
-        try {
-          final response = await _dio.fetch(err.requestOptions);
-          return handler.resolve(response);
-        } catch (_) {
-          continue;
-        }
-      }
+    // Only retry once per failed call: the retried request carries its attempt
+    // count, so it cannot fan out through this interceptor again.
+    if (!_idempotent.contains(options.method.toUpperCase()) ||
+        !_isTransient(err) ||
+        attempt >= _maxRetries) {
+      return handler.next(err);
     }
-    handler.next(err);
+
+    await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+    options.extra[_retryKey] = attempt + 1;
+    try {
+      return handler.resolve(await _dio.fetch(options));
+    } on DioException catch (e) {
+      return handler.next(e);
+    }
   }
 }

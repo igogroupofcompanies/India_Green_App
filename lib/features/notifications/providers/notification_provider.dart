@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/router/route_names.dart';
+
 /// Notification type severity levels.
 enum NotificationType { info, warning, success, urgent }
 
@@ -67,63 +69,9 @@ class NotificationState {
       );
 }
 
-/// Simulated notification pool matching the Kotlin app's alerts.
-const _simulationPool = [
-  (
-    title: '⚠️ Sudden Rain Advisory',
-    desc: 'Heavy rain expected in Salem district within 3 hours. Cover harvested produce!',
-    type: NotificationType.warning,
-    route: '/home',
-  ),
-  (
-    title: '⚖️ Mandi Basmati Price Spike',
-    desc: 'Premium paddy surged to ₹4,550/Qtl at Salem Mandi, hitting your target!',
-    type: NotificationType.urgent,
-    route: '/mandi',
-  ),
-  (
-    title: '💰 PM-KISAN Subsidy Transferred',
-    desc: '₹2,500 Central Scheme Grant credited to your IGO Farm Wallet.',
-    type: NotificationType.success,
-    route: '/hubs/finance',
-  ),
-  (
-    title: '🎓 Academy Certificate',
-    desc: 'Completed the Scientific Paddy Cultivation course. Grab your certificate!',
-    type: NotificationType.success,
-    route: '/hubs/learn',
-  ),
-  (
-    title: '💼 Precision Agri Job Matched',
-    desc: 'IGO Farmlands listed an Operations Lead role matching your profile.',
-    type: NotificationType.info,
-    route: '/hubs/jobs',
-  ),
-  (
-    title: '🤖 Soil Doctor Crop Advice',
-    desc: 'Tomato Septoria leaf spots found. Liquid copper soap spray recommended.',
-    type: NotificationType.info,
-    route: '/ai-doctor',
-  ),
-  (
-    title: '🔥 15% Off Seeds Coupon Live',
-    desc: 'Weekly deals: 15% discount on bio-fertilizers and paddy seeds. Ends tonight!',
-    type: NotificationType.info,
-    route: '/market',
-  ),
-  (
-    title: '🤝 Cold Chain Freight Pickup',
-    desc: 'IGO Logistics truck scheduled near Salem for fresh export loads. Reserve space!',
-    type: NotificationType.urgent,
-    route: '/market',
-  ),
-];
-
-/// Manages notification lifecycle with periodic simulated alerts.
+/// Manages the in-app notification list and the heads-up banner.
 class NotificationNotifier extends StateNotifier<NotificationState> {
-  Timer? _simTimer;
   Timer? _dismissTimer;
-  int _simIndex = 0;
 
   NotificationNotifier() : super(const NotificationState()) {
     // Initial welcome notification
@@ -134,27 +82,7 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
           'Successfully logged in. Explore AgriMart or check Live Mandi prices.',
       timestamp: DateTime.now(),
       type: NotificationType.success,
-      targetRoute: '/home',
-    ));
-
-    // Start simulation after 12 seconds
-    Future.delayed(const Duration(seconds: 12), () {
-      _simTimer = Timer.periodic(const Duration(seconds: 40), (_) {
-        _generateSimulated();
-      });
-    });
-  }
-
-  void _generateSimulated() {
-    final template = _simulationPool[_simIndex % _simulationPool.length];
-    _simIndex++;
-    push(IgoNotification(
-      id: 'sim_${DateTime.now().millisecondsSinceEpoch}',
-      title: template.title,
-      description: template.desc,
-      timestamp: DateTime.now(),
-      type: template.type,
-      targetRoute: template.route,
+      targetRoute: Routes.home,
     ));
   }
 
@@ -193,7 +121,6 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
 
   @override
   void dispose() {
-    _simTimer?.cancel();
     _dismissTimer?.cancel();
     super.dispose();
   }

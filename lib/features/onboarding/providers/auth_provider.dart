@@ -83,7 +83,7 @@ class Auth extends _$Auth {
   void _setupAuthListener() {
     final client = ref.read(supabaseServiceProvider).client;
     
-    client.auth.onAuthStateChange.listen((data) async {
+    final sub = client.auth.onAuthStateChange.listen((data) async {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
 
@@ -91,9 +91,13 @@ class Auth extends _$Auth {
         // Fetch profile
         await _fetchProfile(session.user.id);
       } else if (event == AuthChangeEvent.signedOut) {
-        state = state.copyWith(isAuthenticated: false, profile: null);
+        state = AuthState(
+          selectedRoles: state.selectedRoles,
+          selectedLanguage: state.selectedLanguage,
+        );
       }
     });
+    ref.onDispose(sub.cancel);
 
     // Check initial session
     final session = client.auth.currentSession;
@@ -114,10 +118,8 @@ class Auth extends _$Auth {
             profile: profile,
           );
         } else {
-          state = state.copyWith(
-            isAuthenticated: false,
-            error: 'Profile not found. Please complete registration.',
-          );
+          // New user: OTP verified but registration not completed yet.
+          state = state.copyWith(isAuthenticated: false);
         }
       },
       failure: (failure) {
@@ -154,20 +156,50 @@ class Auth extends _$Auth {
     );
   }
 
-  Future<void> verifyOtp(String phone, String otp) async {
+  /// Verifies the OTP. Returns `true` when the user still has to complete
+  /// registration (no profile yet); `false` when verification failed or an
+  /// existing profile was loaded (the router then sends the user home).
+  Future<bool> verifyOtp(String phone, String otp) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     final formattedPhone = phone.startsWith('+') ? phone : '+91$phone';
-    
+
     final authRepo = ref.read(authRepositoryProvider);
     final result = await authRepo.verifyOtp(formattedPhone, otp);
 
-    result.when(
-      success: (_) {
+    if (result.isFailure) {
+      state = state.copyWith(isLoading: false, error: result.error.message);
+      return false;
+    }
+
+    final user = ref.read(supabaseServiceProvider).client.auth.currentUser;
+    if (user == null) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Authentication failed. Please try again.',
+      );
+      return false;
+    }
+
+    // Existing users must skip registration; inserting a second profile
+    // would fail with a duplicate key.
+    final profileResult = await authRepo.getProfile(user.id);
+    return profileResult.when(
+      success: (profile) {
+        if (profile != null) {
+          state = state.copyWith(
+            isLoading: false,
+            isAuthenticated: true,
+            profile: profile,
+          );
+          return false;
+        }
         state = state.copyWith(isLoading: false);
+        return true;
       },
       failure: (failure) {
         state = state.copyWith(isLoading: false, error: failure.message);
+        return false;
       },
     );
   }

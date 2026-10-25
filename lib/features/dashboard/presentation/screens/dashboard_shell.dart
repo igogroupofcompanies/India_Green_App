@@ -16,9 +16,9 @@ class DashboardShell extends ConsumerWidget {
   // To localize nav items, we need a method instead of a static const list
   List<({IconData icon, String label})> _getNavItems(AppLocalizations l10n) {
     return [
-      (icon: Icons.home_rounded,       label: l10n.navHome),
+      (icon: Icons.home_rounded, label: l10n.navHome),
       (icon: Icons.storefront_rounded, label: l10n.navMarket),
-      (icon: Icons.trending_up_rounded,label: l10n.navMandi),
+      (icon: Icons.trending_up_rounded, label: l10n.navMandi),
       (icon: Icons.folder_special_rounded, label: l10n.navProjects),
       (icon: Icons.more_horiz_rounded, label: l10n.navHubs),
     ];
@@ -44,21 +44,30 @@ class DashboardShell extends ConsumerWidget {
                 color: AppColors.harvestGold,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.spa_rounded,
-                  size: 20, color: AppColors.forestGreen),
+              child: const Icon(
+                Icons.spa_rounded,
+                size: 20,
+                color: AppColors.forestGreen,
+              ),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.appTitle,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5)),
-                Text(l10n.salemFarmerHub,
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: Colors.white60)),
+                Text(
+                  l10n.appTitle,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                Text(
+                  l10n.salemFarmerHub,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white60,
+                  ),
+                ),
               ],
             ),
           ],
@@ -68,8 +77,10 @@ class DashboardShell extends ConsumerWidget {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_rounded,
-                    color: Colors.white),
+                icon: const Icon(
+                  Icons.notifications_rounded,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   _showNotificationTray(context, ref);
                 },
@@ -85,13 +96,16 @@ class DashboardShell extends ConsumerWidget {
                       shape: BoxShape.circle,
                     ),
                     constraints: const BoxConstraints(
-                        minWidth: 18, minHeight: 18),
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
                     child: Text(
                       unreadCount > 9 ? '9+' : '$unreadCount',
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -108,12 +122,7 @@ class DashboardShell extends ConsumerWidget {
           navigationShell,
 
           // Animated heads-up notification
-          const Positioned(
-            top: 0,
-            left: 16,
-            right: 16,
-            child: HeadsUpBanner(),
-          ),
+          const Positioned(top: 0, left: 16, right: 16, child: HeadsUpBanner()),
         ],
       ),
 
@@ -121,21 +130,24 @@ class DashboardShell extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (index) {
-          navigationShell.goBranch(index,
-              initialLocation: index == navigationShell.currentIndex);
+          navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          );
         },
         destinations: _getNavItems(l10n)
-            .map((item) => NavigationDestination(
-                  icon: Icon(item.icon),
-                  label: item.label,
-                ))
+            .map(
+              (item) => NavigationDestination(
+                icon: Icon(item.icon),
+                label: item.label,
+              ),
+            )
             .toList(),
       ),
     );
   }
 
   void _showNotificationTray(BuildContext context, WidgetRef ref) {
-    final notifState = ref.read(notificationStateProvider);
     final notifier = ref.read(notificationStateProvider.notifier);
     final l10n = AppLocalizations.of(context);
 
@@ -146,114 +158,135 @@ class DashboardShell extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (_, scrollCtrl) => Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
-              child: Row(
-                children: [
-                  const Icon(Icons.notifications_rounded,
-                      color: AppColors.forestGreen),
-                  const SizedBox(width: 8),
-                  Text(l10n.notifications,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      notifier.markAllRead();
-                      Navigator.pop(ctx);
-                    },
-                    child: Text(l10n.markAllRead),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: notifState.notifications.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.notifications_off_rounded,
-                              size: 48,
-                              color: Colors.grey.withValues(alpha: 0.3)),
-                          const SizedBox(height: 8),
-                          Text(l10n.noNotifications,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.grey)),
-                        ],
+      builder: (ctx) => Consumer(
+        builder: (ctx, ref, _) {
+          // Watch so the tray reflects new/cleared notifications while open.
+          final notifState = ref.watch(notificationStateProvider);
+          return DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            minChildSize: 0.3,
+            maxChildSize: 0.9,
+            expand: false,
+            builder: (_, scrollCtrl) => Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 8, 8),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.notifications_rounded,
+                        color: AppColors.forestGreen,
                       ),
-                    )
-                  : ListView.separated(
-                      controller: scrollCtrl,
-                      itemCount: notifState.notifications.length,
-                      separatorBuilder: (_, __) =>
-                          const Divider(height: 1, indent: 56),
-                      itemBuilder: (_, i) {
-                        final n = notifState.notifications[i];
-                        final iconColor = switch (n.type) {
-                          NotificationType.success => AppColors.success,
-                          NotificationType.warning => AppColors.warning,
-                          NotificationType.urgent  => AppColors.error,
-                          NotificationType.info    => AppColors.info,
-                        };
-                        final icon = switch (n.type) {
-                          NotificationType.success =>
-                            Icons.check_circle_rounded,
-                          NotificationType.warning =>
-                            Icons.warning_amber_rounded,
-                          NotificationType.urgent =>
-                            Icons.notifications_active_rounded,
-                          NotificationType.info => Icons.info_rounded,
-                        };
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: iconColor.withValues(alpha: 0.1),
-                            child: Icon(icon,
-                                color: iconColor, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.notifications,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          notifier.markAllRead();
+                          Navigator.pop(ctx);
+                        },
+                        child: Text(l10n.markAllRead),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: notifState.notifications.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.notifications_off_rounded,
+                                size: 48,
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.noNotifications,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: Colors.grey),
+                              ),
+                            ],
                           ),
-                          title: Text(n.title,
-                              style: TextStyle(
-                                fontWeight: n.isNew
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 13,
-                              )),
-                          subtitle: Text(n.description,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 11)),
-                          trailing: Text(n.timeAgo,
-                              style: const TextStyle(
-                                  fontSize: 10, color: Colors.grey)),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          onTap: () {
-                            notifier.markRead(n.id);
-                            Navigator.pop(ctx);
+                        )
+                      : ListView.separated(
+                          controller: scrollCtrl,
+                          itemCount: notifState.notifications.length,
+                          separatorBuilder: (_, __) =>
+                              const Divider(height: 1, indent: 56),
+                          itemBuilder: (_, i) {
+                            final n = notifState.notifications[i];
+                            final iconColor = switch (n.type) {
+                              NotificationType.success => AppColors.success,
+                              NotificationType.warning => AppColors.warning,
+                              NotificationType.urgent => AppColors.error,
+                              NotificationType.info => AppColors.info,
+                            };
+                            final icon = switch (n.type) {
+                              NotificationType.success =>
+                                Icons.check_circle_rounded,
+                              NotificationType.warning =>
+                                Icons.warning_amber_rounded,
+                              NotificationType.urgent =>
+                                Icons.notifications_active_rounded,
+                              NotificationType.info => Icons.info_rounded,
+                            };
+
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: iconColor.withValues(
+                                  alpha: 0.1,
+                                ),
+                                child: Icon(icon, color: iconColor, size: 20),
+                              ),
+                              title: Text(
+                                n.title,
+                                style: TextStyle(
+                                  fontWeight: n.isNew
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              subtitle: Text(
+                                n.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              trailing: Text(
+                                n.timeAgo,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              onTap: () {
+                                notifier.markRead(n.id);
+                                Navigator.pop(ctx);
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/services/supabase_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -58,7 +59,11 @@ class _UserDetailsScreenState extends ConsumerState<UserDetailsScreen> {
     final authState = ref.watch(authProvider);
 
     // Phone was passed from OtpLoginScreen via GoRouter extra
-    final phone = GoRouterState.of(context).extra as String? ?? '';
+    // (falls back to the verified Supabase user's phone if `extra` was lost,
+    // e.g. after the process was restarted mid-onboarding)
+    final phone = GoRouterState.of(context).extra as String? ??
+        ref.read(supabaseServiceProvider).client.auth.currentUser?.phone ??
+        '';
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {

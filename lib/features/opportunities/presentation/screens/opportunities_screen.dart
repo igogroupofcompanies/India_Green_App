@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+
+import '../../../../core/presentation/widgets/coming_soon_view.dart';
 
 class OpportunitiesScreen extends StatelessWidget {
   const OpportunitiesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Estates & Franchises'), backgroundColor: AppColors.forestGreen, foregroundColor: Colors.white),
-      body: const Center(child: Text('Opportunities features coming soon.')),
-    );
-  }
+  Widget build(BuildContext context) => const ComingSoonScaffold(
+      title: 'Estates & Franchises', icon: Icons.storefront_rounded);
 }
