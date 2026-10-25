@@ -1,0 +1,72 @@
+name: Build APK
+
+# Builds a release APK and attaches it to the run as an artifact.
+# Needs repo secrets SUPABASE_URL and SUPABASE_ANON_KEY (anon key only).
+# Optional: SENTRY_DSN, and ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD /
+# ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD for a properly signed build
+# (without them the APK is debug-signed: fine for testing, not for the Play Store).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ ccr-40028799-ey1dps ]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: 'stable'
+
+      - name: Write .env
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Add SUPABASE_URL and SUPABASE_ANON_KEY as repository secrets (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          {
+            echo "SUPABASE_URL=$SUPABASE_URL"
+            echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+            echo "SENTRY_DSN=$SENTRY_DSN"
+            echo "GEMINI_API_KEY="
+            echo "BASE_URL=https://api.igoconnection.com"
+          } > .env
+
+      - name: Release keystore (optional)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/upload.jks
+            {
+              echo "storeFile=upload.jks"
+              echo "storePassword=$STORE_PW"
+              echo "keyAlias=$KEY_ALIAS"
+              echo "keyPassword=$KEY_PW"
+            } > android/key.properties
+          fi
+
+      - run: flutter pub get
+      - run: dart run build_runner build -d
+      - run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: india-green-app-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
