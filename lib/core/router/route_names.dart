@@ -13,6 +13,9 @@ abstract final class Routes {
   static const mandi          = '/mandi';
   static const aiDoctor       = '/ai-doctor';
   static const projects       = '/projects';
+  static const products       = '/products';
+  static const services       = '/services';
+  static const course         = '/course';
   static const agriProjects          = '/projects/agri-farming';
   static const aquacultureProjects   = '/projects/aquaculture';
   static const livestockProjects     = '/projects/livestock';
