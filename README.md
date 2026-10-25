@@ -25,3 +25,16 @@ and **must not** be uploaded to the Play Store.
 
 Supabase migrations live in `supabase/migrations`; the OTP SMS hook is
 `supabase/functions/send-sms` (see its header for required secrets).
+
+### Admin access
+
+Bookings (projects, products, services, courses) are stored in `public.bookings`.
+Admins are rows in `public.admins`, which clients cannot read or write — add one
+from the Supabase SQL editor (never from the app):
+
+```sql
+insert into public.admins (user_id)
+select id from auth.users where phone = '919876543210';
+```
+
+Admins then see **Admin Panel** in the avatar menu (top right).

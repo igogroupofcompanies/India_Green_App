@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/widgets/asset_photo.dart';
-import '../../../../core/presentation/widgets/coming_soon_snack.dart';
+import '../../../bookings/presentation/widgets/booking_sheet.dart';
+import '../../../bookings/domain/booking.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -36,7 +37,8 @@ class ProductsScreen extends StatelessWidget {
           photo: c.photo,
           onExplore: () => c.route != null
               ? context.go(c.route!)
-              : showComingSoon(context, c.title),
+              : showBookingSheet(context,
+                  type: BookingType.product, itemTitle: c.title),
         );
       },
     );

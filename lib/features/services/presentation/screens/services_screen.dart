@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/presentation/widgets/asset_photo.dart';
-import '../../../../core/presentation/widgets/coming_soon_snack.dart';
+import '../../../bookings/presentation/widgets/booking_sheet.dart';
+import '../../../bookings/domain/booking.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -39,7 +40,8 @@ class ServicesScreen extends StatelessWidget {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(24),
-                  onTap: () => showComingSoon(context, s.title),
+                  onTap: () => showBookingSheet(context,
+                      type: BookingType.service, itemTitle: s.title),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(

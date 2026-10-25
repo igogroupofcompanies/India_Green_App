@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/presentation/widgets/asset_photo.dart';
-import '../../../../core/presentation/widgets/coming_soon_snack.dart';
+import '../../../bookings/presentation/widgets/booking_sheet.dart';
+import '../../../bookings/domain/booking.dart';
 import '../../../../core/presentation/widgets/section_header.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -33,7 +34,8 @@ class LearningAcademyScreen extends StatelessWidget {
                 level: c.level,
                 icon: c.icon,
                 photo: c.photo,
-                onTap: () => showComingSoon(context, c.title),
+                onTap: () => showBookingSheet(context,
+                    type: BookingType.course, itemTitle: c.title),
               );
             },
           ),

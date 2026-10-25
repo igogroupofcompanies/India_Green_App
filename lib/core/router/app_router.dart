@@ -22,6 +22,8 @@ import '../../features/projects/presentation/screens/livestock_projects_screen.d
 import '../../features/projects/presentation/screens/farm_engineering_projects_screen.dart';
 import '../../features/products/presentation/screens/products_screen.dart';
 import '../../features/services/presentation/screens/services_screen.dart';
+import '../../features/bookings/presentation/screens/admin_bookings_screen.dart';
+import '../../features/bookings/presentation/screens/my_bookings_screen.dart';
 import '../../features/learning/presentation/screens/learning_academy_screen.dart';
 import '../../features/finance/presentation/screens/finance_screen.dart';
 import '../../features/jobs/presentation/screens/jobs_screen.dart';
@@ -110,6 +112,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: Routes.mandi,
               builder: (_, __) => const MandiScreen(),
+            ),
+            GoRoute(
+              path: Routes.myBookings,
+              builder: (_, __) => const MyBookingsScreen(),
+            ),
+            GoRoute(
+              path: Routes.admin,
+              builder: (_, __) => const AdminBookingsScreen(),
             ),
             GoRoute(
               path: Routes.hubs,

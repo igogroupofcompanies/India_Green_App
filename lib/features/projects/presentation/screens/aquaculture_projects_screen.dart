@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import '../../../bookings/domain/booking.dart';
+import '../../../bookings/presentation/widgets/booking_sheet.dart';
 
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -274,15 +276,8 @@ class _SubCategoryCard extends StatelessWidget {
         final item = entry.value;
         final isLast = i == category.items.length - 1;
         return InkWell(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(item),
-                duration: const Duration(seconds: 1),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
+          onTap: () => showBookingSheet(context,
+              type: BookingType.project, itemTitle: item),
           child: Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -307,11 +302,9 @@ class _SubCategoryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 14),
                 Expanded(child: Text(item, style: theme.textTheme.bodyMedium)),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                ),
+                Text('Book',
+                    style: theme.textTheme.labelLarge
+                        ?.copyWith(color: category.color)),
               ],
             ),
           ),

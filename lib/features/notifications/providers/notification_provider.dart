@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/router/route_names.dart';
@@ -45,34 +44,19 @@ class IgoNotification {
   }
 }
 
-/// State holding the notification list and heads-up display state.
+/// State holding the notification list shown in the bell tray.
 class NotificationState {
   final List<IgoNotification> notifications;
-  final IgoNotification? currentHeadsUp;
-  final bool isHeadsUpVisible;
 
-  const NotificationState({
-    this.notifications = const [],
-    this.currentHeadsUp,
-    this.isHeadsUpVisible = false,
-  });
+  const NotificationState({this.notifications = const []});
 
-  NotificationState copyWith({
-    List<IgoNotification>? notifications,
-    IgoNotification? currentHeadsUp,
-    bool? isHeadsUpVisible,
-  }) =>
-      NotificationState(
-        notifications: notifications ?? this.notifications,
-        currentHeadsUp: currentHeadsUp ?? this.currentHeadsUp,
-        isHeadsUpVisible: isHeadsUpVisible ?? this.isHeadsUpVisible,
-      );
+  NotificationState copyWith({List<IgoNotification>? notifications}) =>
+      NotificationState(notifications: notifications ?? this.notifications);
 }
 
-/// Manages the in-app notification list and the heads-up banner.
+/// Manages the in-app notification list. No pop-up bubble is shown; new items
+/// appear as the unread badge on the bell.
 class NotificationNotifier extends StateNotifier<NotificationState> {
-  Timer? _dismissTimer;
-
   NotificationNotifier() : super(const NotificationState()) {
     // Initial welcome notification
     push(IgoNotification(
@@ -87,19 +71,7 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
   }
 
   void push(IgoNotification notification) {
-    state = state.copyWith(
-      notifications: [notification, ...state.notifications],
-      currentHeadsUp: notification,
-      isHeadsUpVisible: true,
-    );
-
-    // Auto-dismiss heads-up after 6.5 seconds
-    _dismissTimer?.cancel();
-    _dismissTimer = Timer(const Duration(milliseconds: 6500), dismissHeadsUp);
-  }
-
-  void dismissHeadsUp() {
-    state = state.copyWith(isHeadsUpVisible: false);
+    state = state.copyWith(notifications: [notification, ...state.notifications]);
   }
 
   void markRead(String id) {
@@ -117,12 +89,6 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
 
   void clearAll() {
     state = state.copyWith(notifications: []);
-  }
-
-  @override
-  void dispose() {
-    _dismissTimer?.cancel();
-    super.dispose();
   }
 }
 

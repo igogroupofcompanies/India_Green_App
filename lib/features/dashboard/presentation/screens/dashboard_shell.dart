@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../bookings/providers/bookings_provider.dart';
 import '../../../onboarding/providers/auth_provider.dart';
 import '../../../../core/router/route_names.dart';
-import '../../../notifications/presentation/widgets/heads_up_banner.dart';
 import '../../../notifications/providers/notification_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -75,8 +75,19 @@ class DashboardShell extends ConsumerWidget {
           ],
         ),
         actions: [
-          GestureDetector(
-            onTap: () => context.go(Routes.profile),
+          PopupMenuButton<String>(
+            tooltip: 'Account',
+            onSelected: context.go,
+            offset: const Offset(0, 48),
+            itemBuilder: (_) => [
+              const PopupMenuItem(
+                  value: Routes.profile, child: Text('My Profile')),
+              const PopupMenuItem(
+                  value: Routes.myBookings, child: Text('My Bookings')),
+              if (ref.watch(isAdminProvider).valueOrNull ?? false)
+                const PopupMenuItem(
+                    value: Routes.admin, child: Text('Admin Panel')),
+            ],
             child: CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.harvestGold,
@@ -133,15 +144,7 @@ class DashboardShell extends ConsumerWidget {
         ],
       ),
 
-      // ── Body with Heads-Up Overlay ──
-      body: Stack(
-        children: [
-          navigationShell,
-
-          // Animated heads-up notification
-          const Positioned(top: 0, left: 16, right: 16, child: HeadsUpBanner()),
-        ],
-      ),
+      body: navigationShell,
 
       // ── Bottom Navigation ───────────
       bottomNavigationBar: NavigationBar(
