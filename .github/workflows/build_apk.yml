@@ -12,6 +12,21 @@ on:
     branches: [ ccr-40028799-ey1dps ]
 
 jobs:
+  # Needs no secrets: proves the code compiles, passes analysis and tests.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: 'stable'
+      - run: cp -n .env.example .env
+      - run: flutter pub get
+      - run: dart run build_runner build -d
+      - run: flutter analyze
+      - run: flutter test
+
   apk:
     runs-on: ubuntu-latest
     steps:
