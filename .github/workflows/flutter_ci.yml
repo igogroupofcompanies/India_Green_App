@@ -22,11 +22,10 @@ jobs:
       - name: Create .env from example (bundled asset; real values are not in git)
         run: cp -n .env.example .env
 
+      # Generated *.g.dart / *.freezed.dart files are committed; running
+      # build_runner in CI hangs, so it is intentionally skipped.
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Generate Code
-        run: dart run build_runner build -d
 
       - name: Analyze code
         run: flutter analyze
