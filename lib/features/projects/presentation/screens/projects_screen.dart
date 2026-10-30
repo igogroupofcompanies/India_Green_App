@@ -1,205 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../core/theme/app_spacing.dart';
-import '../../../../../core/router/route_names.dart';
-import '../../../../../l10n/app_localizations.dart';
+import '../../../../core/presentation/widgets/asset_photo.dart';
+import '../../../../core/router/route_names.dart';
+import '../../../../l10n/app_localizations.dart';
 
-/// Projects hub — shows the four project category cards.
+/// Projects hub — photo cards for the four project categories.
 class ProjectsScreen extends StatelessWidget {
   const ProjectsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n  = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context);
 
     final categories = [
-      _ProjectCategory(
+      (
         title: l10n.agriFarmingProjects,
         subtitle: 'Crops, orchards & greenhouse farming',
         icon: Icons.grass_rounded,
         color: const Color(0xFF2E7D32),
-        gradientEnd: const Color(0xFF1B5E20),
+        photo: 'project_agri.jpg',
         route: Routes.agriProjects,
       ),
-      _ProjectCategory(
+      (
         title: l10n.aquacultureProjects,
         subtitle: 'Fish, shrimp & aquatic farming',
-        icon: Icons.water_rounded,
+        icon: Icons.waves_rounded,
         color: const Color(0xFF0277BD),
-        gradientEnd: const Color(0xFF01579B),
+        photo: 'project_aqua.jpg',
         route: Routes.aquacultureProjects,
       ),
-      _ProjectCategory(
+      (
         title: l10n.livestockFarmingProjects,
         subtitle: 'Cattle, poultry & dairy farming',
         icon: Icons.pets_rounded,
         color: const Color(0xFFE65100),
-        gradientEnd: const Color(0xFFBF360C),
+        photo: 'project_livestock.jpg',
         route: Routes.livestockProjects,
       ),
-      _ProjectCategory(
+      (
         title: l10n.farmEngineeringProjects,
         subtitle: 'Irrigation, machinery & infrastructure',
         icon: Icons.engineering_rounded,
         color: const Color(0xFF6A1B9A),
-        gradientEnd: const Color(0xFF4A148C),
+        photo: 'project_engineering.jpg',
         route: Routes.farmEngineeringProjects,
       ),
     ];
 
-    return SingleChildScrollView(
-      padding: AppSpacing.screenPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-
-          // Header
-          Text(
-            l10n.projectsTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.forestGreen,
-            ),
-          ).animate().fadeIn(duration: 400.ms),
-
-          const SizedBox(height: 4),
-
-          Text(
-            'Select a category to explore projects',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textMuted,
-            ),
-          ).animate().fadeIn(delay: 100.ms),
-
-          const SizedBox(height: 20),
-
-          // Category cards
-          ...categories.asMap().entries.map((entry) {
-            final i    = entry.key;
-            final cat  = entry.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _ProjectCategoryCard(category: cat)
-                  .animate()
-                  .fadeIn(delay: Duration(milliseconds: 150 + i * 80))
-                  .slideY(begin: 0.15),
-            );
-          }),
-
-          const SizedBox(height: 16),
-        ],
-      ),
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: categories.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemBuilder: (context, i) {
+        final c = categories[i];
+        return _ProjectCard(
+          title: c.title,
+          subtitle: c.subtitle,
+          icon: c.icon,
+          color: c.color,
+          photo: c.photo,
+          onTap: () => context.go(c.route),
+        );
+      },
     );
   }
 }
 
-// ── Data model ──────────────────────────────────────────────────────────────
-
-class _ProjectCategory {
+class _ProjectCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color color;
-  final Color gradientEnd;
-  final String? route;
+  final String photo;
+  final VoidCallback onTap;
 
-  const _ProjectCategory({
+  const _ProjectCard({
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.color,
-    required this.gradientEnd,
-    required this.route,
+    required this.photo,
+    required this.onTap,
   });
-}
-
-// ── Category card widget ─────────────────────────────────────────────────────
-
-class _ProjectCategoryCard extends StatelessWidget {
-  final _ProjectCategory category;
-  const _ProjectCategoryCard({required this.category});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Material(
-      borderRadius: BorderRadius.circular(20),
-      elevation: 3,
-      shadowColor: category.color.withValues(alpha: 0.3),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          if (category.route != null) {
-            context.go(category.route!);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${category.title} — coming soon'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          }
-        },
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [category.color, category.gradientEnd],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            children: [
-              // Icon circle
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(category.icon, color: Colors.white, size: 32),
-              ),
-
-              const SizedBox(width: 20),
-
-              // Text
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      category.subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.white70,
-                      ),
-                    ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AssetPhoto(photo, fallbackIcon: icon),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.15),
+                    Colors.black.withValues(alpha: 0.6),
                   ],
                 ),
               ),
-
-              // Arrow
-              const Icon(Icons.arrow_forward_ios_rounded,
-                  color: Colors.white54, size: 18),
-            ],
-          ),
+            ),
+            Positioned(
+              left: 16,
+              right: 12,
+              bottom: 18,
+              child: Row(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(icon, color: Colors.white, size: 30),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        Text(subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: Colors.white70)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded,
+                      color: Colors.white70, size: 28),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

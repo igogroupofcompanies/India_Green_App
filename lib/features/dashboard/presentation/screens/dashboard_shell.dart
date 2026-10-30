@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../notifications/presentation/widgets/heads_up_banner.dart';
+import '../../../bookings/providers/bookings_provider.dart';
+import '../../../onboarding/providers/auth_provider.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../notifications/providers/notification_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -13,15 +15,21 @@ class DashboardShell extends ConsumerWidget {
 
   const DashboardShell({super.key, required this.navigationShell});
 
-  // To localize nav items, we need a method instead of a static const list
+  // Order must match the shell branches in app_router.dart.
   List<({IconData icon, String label})> _getNavItems(AppLocalizations l10n) {
     return [
       (icon: Icons.home_rounded, label: l10n.navHome),
-      (icon: Icons.storefront_rounded, label: l10n.navMarket),
-      (icon: Icons.trending_up_rounded, label: l10n.navMandi),
       (icon: Icons.folder_special_rounded, label: l10n.navProjects),
-      (icon: Icons.more_horiz_rounded, label: l10n.navHubs),
+      (icon: Icons.storefront_rounded, label: 'Products'),
+      (icon: Icons.design_services_rounded, label: 'Services'),
+      (icon: Icons.school_rounded, label: 'Course'),
     ];
+  }
+
+  static String _initials(String? name) {
+    final parts = (name ?? '').trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
+    if (parts.isEmpty) return 'IG';
+    return parts.take(2).map((p) => p[0].toUpperCase()).join();
   }
 
   @override
@@ -35,44 +43,64 @@ class DashboardShell extends ConsumerWidget {
       // ── App Bar ─────────────────────
       appBar: AppBar(
         backgroundColor: AppColors.forestGreen,
+        toolbarHeight: 72,
         title: Row(
           children: [
             Container(
-              width: 32,
-              height: 32,
+              width: 40,
+              height: 40,
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: AppColors.harvestGold,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.spa_rounded,
-                size: 20,
-                color: AppColors.forestGreen,
+              child: Image.asset(
+                'assets/images/logo_mark.png',
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.spa_rounded,
+                  color: AppColors.forestGreen,
+                ),
               ),
             ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.appTitle,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                Text(
-                  l10n.salemFarmerHub,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.white60,
-                  ),
-                ),
-              ],
+            const SizedBox(width: 14),
+            Text(
+              l10n.appTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
             ),
           ],
         ),
         actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Account',
+            onSelected: context.go,
+            offset: const Offset(0, 48),
+            itemBuilder: (_) => [
+              const PopupMenuItem(
+                  value: Routes.profile, child: Text('My Profile')),
+              const PopupMenuItem(
+                  value: Routes.myBookings, child: Text('My Bookings')),
+              if (ref.watch(isAdminProvider).valueOrNull ?? false)
+                const PopupMenuItem(
+                    value: Routes.admin, child: Text('Admin Panel')),
+            ],
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: AppColors.harvestGold,
+              child: Text(
+                _initials(ref.watch(authProvider).profile?.name),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           // Notification bell with badge
           Stack(
             children: [
@@ -112,19 +140,11 @@ class DashboardShell extends ConsumerWidget {
                 ),
             ],
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
         ],
       ),
 
-      // ── Body with Heads-Up Overlay ──
-      body: Stack(
-        children: [
-          navigationShell,
-
-          // Animated heads-up notification
-          const Positioned(top: 0, left: 16, right: 16, child: HeadsUpBanner()),
-        ],
-      ),
+      body: navigationShell,
 
       // ── Bottom Navigation ───────────
       bottomNavigationBar: NavigationBar(

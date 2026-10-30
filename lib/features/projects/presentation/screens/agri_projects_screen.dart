@@ -3,7 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../bookings/domain/booking.dart';
+import '../../../bookings/presentation/widgets/booking_sheet.dart';
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -369,13 +371,8 @@ class _SubCategoryCard extends StatelessWidget {
                 }
               }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${item.name} — coming soon'),
-                  duration: const Duration(seconds: 1),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              showBookingSheet(context,
+                  type: BookingType.project, itemTitle: item.name);
             }
           },
           child: Container(
@@ -410,14 +407,23 @@ class _SubCategoryCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
-                  hasUrl
-                      ? Icons.open_in_new_rounded
-                      : Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: hasUrl
-                      ? theme.colorScheme.primary.withValues(alpha: 0.7)
-                      : theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                if (hasUrl) ...[
+                  Icon(
+                    Icons.open_in_new_rounded,
+                    size: 14,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                InkWell(
+                  onTap: () => showBookingSheet(context,
+                      type: BookingType.project, itemTitle: item.name),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text('Book',
+                        style: theme.textTheme.labelLarge
+                            ?.copyWith(color: category.color)),
+                  ),
                 ),
               ],
             ),

@@ -20,6 +20,10 @@ import '../../features/projects/presentation/screens/agri_projects_screen.dart';
 import '../../features/projects/presentation/screens/aquaculture_projects_screen.dart';
 import '../../features/projects/presentation/screens/livestock_projects_screen.dart';
 import '../../features/projects/presentation/screens/farm_engineering_projects_screen.dart';
+import '../../features/products/presentation/screens/products_screen.dart';
+import '../../features/services/presentation/screens/services_screen.dart';
+import '../../features/bookings/presentation/screens/admin_bookings_screen.dart';
+import '../../features/bookings/presentation/screens/my_bookings_screen.dart';
 import '../../features/learning/presentation/screens/learning_academy_screen.dart';
 import '../../features/finance/presentation/screens/finance_screen.dart';
 import '../../features/jobs/presentation/screens/jobs_screen.dart';
@@ -95,31 +99,55 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return DashboardShell(navigationShell: navigationShell);
         },
         branches: [
-          // Branch 0: Home
+          // Branch 0: Home (also hosts the secondary screens reached from it)
           StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.home,
               builder: (_, __) => const HomeScreen(),
             ),
-          ]),
-
-          // Branch 1: Market
-          StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.agrimart,
               builder: (_, __) => const AgriMartScreen(),
             ),
-          ]),
-
-          // Branch 2: Mandi
-          StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.mandi,
               builder: (_, __) => const MandiScreen(),
             ),
+            GoRoute(
+              path: Routes.myBookings,
+              builder: (_, __) => const MyBookingsScreen(),
+            ),
+            GoRoute(
+              path: Routes.admin,
+              builder: (_, __) => const AdminBookingsScreen(),
+            ),
+            GoRoute(
+              path: Routes.hubs,
+              redirect: (_, __) => Routes.profile,
+            ),
+            GoRoute(
+              path: Routes.profile,
+              builder: (_, __) => const ProfileScreen(),
+            ),
+            GoRoute(
+              path: Routes.vendor,
+              builder: (_, __) => const VendorDashboardScreen(),
+            ),
+            GoRoute(
+              path: Routes.finance,
+              builder: (_, __) => const FinanceScreen(),
+            ),
+            GoRoute(
+              path: Routes.jobs,
+              builder: (_, __) => const JobsScreen(),
+            ),
+            GoRoute(
+              path: Routes.opportunities,
+              builder: (_, __) => const OpportunitiesScreen(),
+            ),
           ]),
 
-          // Branch 3: Projects
+          // Branch 1: Projects
           StatefulShellBranch(routes: [
             GoRoute(
               path: Routes.projects,
@@ -145,35 +173,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ),
           ]),
 
-          // Branch 4: Hubs
+          // Branch 2: Products
           StatefulShellBranch(routes: [
             GoRoute(
-              path: Routes.hubs,
-              redirect: (_, __) => Routes.profile,
+              path: Routes.products,
+              builder: (_, __) => const ProductsScreen(),
             ),
+          ]),
+
+          // Branch 3: Services
+          StatefulShellBranch(routes: [
             GoRoute(
-              path: Routes.profile,
-              builder: (_, __) => const ProfileScreen(),
+              path: Routes.services,
+              builder: (_, __) => const ServicesScreen(),
             ),
+          ]),
+
+          // Branch 4: Course
+          StatefulShellBranch(routes: [
             GoRoute(
-              path: Routes.vendor,
-              builder: (_, __) => const VendorDashboardScreen(),
-            ),
-            GoRoute(
-              path: Routes.finance,
-              builder: (_, __) => const FinanceScreen(),
-            ),
-            GoRoute(
-              path: Routes.learn,
+              path: Routes.course,
               builder: (_, __) => const LearningAcademyScreen(),
             ),
             GoRoute(
-              path: Routes.jobs,
-              builder: (_, __) => const JobsScreen(),
-            ),
-            GoRoute(
-              path: Routes.opportunities,
-              builder: (_, __) => const OpportunitiesScreen(),
+              path: Routes.learn,
+              redirect: (_, __) => Routes.course,
             ),
           ]),
         ],
