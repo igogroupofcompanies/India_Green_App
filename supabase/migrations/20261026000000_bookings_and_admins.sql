@@ -17,7 +17,7 @@ create function public.is_admin() returns boolean
 language sql security definer stable set search_path = public as $$
   select exists (select 1 from public.admins where user_id = auth.uid());
 $$;
-revoke all on function public.is_admin() from public;
+revoke all on function public.is_admin() from public, anon;
 grant execute on function public.is_admin() to authenticated;
 
 create type public.booking_type as enum ('project', 'product', 'service', 'course');
@@ -42,7 +42,7 @@ create index bookings_user_idx on public.bookings (user_id, created_at desc);
 create index bookings_status_idx on public.bookings (status, created_at desc);
 
 create function public.touch_updated_at() returns trigger
-language plpgsql as $$
+language plpgsql set search_path = public as $$
 begin
   new.updated_at = now();
   return new;
@@ -72,5 +72,5 @@ language sql security definer set search_path = public as $$
      set status = 'cancelled'
    where id = p_id and user_id = auth.uid() and status = 'pending';
 $$;
-revoke all on function public.cancel_booking(uuid) from public;
+revoke all on function public.cancel_booking(uuid) from public, anon;
 grant execute on function public.cancel_booking(uuid) to authenticated;
