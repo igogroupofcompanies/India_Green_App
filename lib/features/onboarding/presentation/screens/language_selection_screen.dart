@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/l10n/locale_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../widgets/onboarding_scaffold.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Language data model for display.
@@ -61,162 +61,131 @@ class _LanguageSelectionScreenState
   }
 
   Widget _buildScaffold(BuildContext context, ThemeData theme) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: AppSpacing.screenPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final l10n = AppLocalizations.of(context);
+
+    return OnboardingScaffold(
+      step: 1,
+      title: l10n.selectLanguage,
+      subtitle: l10n.selectLanguageSubtitle,
+      bottom: SizedBox(
+        width: double.infinity,
+        height: 54,
+        child: ElevatedButton(
+          onPressed: () {
+            ref.read(localeProvider.notifier).setLanguage(_selected);
+            ref.read(authProvider.notifier).setLanguage(_selected);
+            context.go(Routes.roleSelect);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.harvestGold,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 24),
-
-              // Header icon
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.harvestGold.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(Icons.translate_rounded,
-                    color: AppColors.harvestGold, size: 32),
-              ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2),
-
-              const SizedBox(height: 20),
-
               Text(
-                AppLocalizations.of(context).selectLanguage,
-                style: theme.textTheme.headlineMedium?.copyWith(
+                l10n.continueBtn,
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.forestGreen,
-                ),
-              ).animate().fadeIn(delay: 100.ms, duration: 400.ms),
-
-              const SizedBox(height: 6),
-
-              Text(
-                AppLocalizations.of(context).selectLanguageSubtitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textMuted,
-                ),
-              ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
-
-              const SizedBox(height: 24),
-
-              // Language grid
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 1.8,
-                  ),
-                  itemCount: _languages.length,
-                  itemBuilder: (context, index) {
-                    final lang = _languages[index];
-                    final isSelected = _selected == lang.name;
-
-                    return GestureDetector(
-                      onTap: () => setState(() => _selected = lang.name),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeOut,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.forestGreen
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.forestGreen
-                                : AppColors.softGray,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: AppColors.forestGreen
-                                        .withValues(alpha: 0.2),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  )
-                                ]
-                              : null,
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              lang.nativeScript,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    isSelected ? Colors.white : AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              lang.greeting,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: isSelected
-                                    ? Colors.white.withValues(alpha: 0.7)
-                                    : AppColors.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                        .animate(delay: (50 * index).ms)
-                        .fadeIn(duration: 300.ms)
-                        .slideY(begin: 0.1, duration: 300.ms);
-                  },
+                  color: Colors.white,
                 ),
               ),
-
-              const SizedBox(height: 16),
-
-              // Continue button
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.read(localeProvider.notifier).setLanguage(_selected);
-                    ref.read(authProvider.notifier).setLanguage(_selected);
-                    context.go(Routes.roleSelect);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.harvestGold,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).continueBtn,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
-                ),
-              ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.2),
-
-              const SizedBox(height: 16),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_rounded, size: 20),
             ],
           ),
         ),
+      ),
+      child: GridView.builder(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.8,
+        ),
+        itemCount: _languages.length,
+        itemBuilder: (context, index) {
+          final lang = _languages[index];
+          final isSelected = _selected == lang.name;
+
+          return Semantics(
+            button: true,
+            selected: isSelected,
+            label: '${lang.name} ${lang.nativeScript}',
+            child: GestureDetector(
+              onTap: () => setState(() => _selected = lang.name),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.forestGreen : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.forestGreen
+                        : const Color(0xFFE3E8E5),
+                    width: isSelected ? 2 : 1,
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.forestGreen.withValues(alpha: 0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          )
+                        ]
+                      : null,
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            lang.nativeScript,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            lang.greeting,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isSelected
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : AppColors.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSelected)
+                      const Icon(Icons.check_circle_rounded,
+                          color: AppColors.harvestGold, size: 22),
+                  ],
+                ),
+              ),
+            ),
+          )
+              .animate(delay: (40 * index).ms)
+              .fadeIn(duration: 300.ms)
+              .slideY(begin: 0.1, duration: 300.ms);
+        },
       ),
     );
   } // end _buildScaffold

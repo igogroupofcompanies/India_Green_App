@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/router/route_names.dart';
 import '../../providers/auth_provider.dart';
+import '../widgets/onboarding_scaffold.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Role data for the selection grid.
@@ -64,48 +64,54 @@ class RoleSelectionScreen extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: AppSpacing.screenPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return OnboardingScaffold(
+      step: 2,
+      title: l10n.selectRoles,
+      subtitle: l10n.selectRolesSubtitle,
+      onBack: () => context.go(Routes.languageSelect),
+      bottom: SizedBox(
+        width: double.infinity,
+        height: 54,
+        child: ElevatedButton(
+          onPressed: selectedRoles.isEmpty
+              ? null
+              : () => context.go(Routes.otpLogin),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.harvestGold,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: AppColors.softGray,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: selectedRoles.isEmpty ? 0 : 4,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 24),
-
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.growthGreen.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
+              Flexible(
+                child: Text(
+                  selectedRoles.isEmpty
+                      ? l10n.selectAtLeastOneRole
+                      : l10n.continueWithRoles(selectedRoles.length),
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: selectedRoles.isEmpty
+                        ? AppColors.textMuted
+                        : Colors.white,
+                  ),
                 ),
-                child: const Icon(Icons.people_alt_rounded,
-                    color: AppColors.growthGreen, size: 32),
-              ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2),
-
-              const SizedBox(height: 20),
-
-              Text(
-                l10n.selectRoles,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.forestGreen,
-                ),
-              ).animate().fadeIn(delay: 100.ms, duration: 400.ms),
-
-              const SizedBox(height: 6),
-
-              Text(
-                l10n.selectRolesSubtitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textMuted,
-                ),
-              ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
-
-              const SizedBox(height: 24),
-
-              Expanded(
-                child: ListView.separated(
+              ),
+              if (selectedRoles.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_rounded, size: 20),
+              ],
+            ],
+          ),
+        ),
+      ),
+      child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                   itemCount: _roles.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
@@ -218,54 +224,6 @@ class RoleSelectionScreen extends ConsumerWidget {
                         .slideX(begin: 0.1, duration: 300.ms);
                   },
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: selectedRoles.isEmpty
-                      ? null
-                      : () => context.go(Routes.otpLogin),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.harvestGold,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.softGray,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: selectedRoles.isEmpty ? 0 : 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        selectedRoles.isEmpty
-                            ? l10n.selectAtLeastOneRole
-                            : l10n.continueWithRoles(selectedRoles.length),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: selectedRoles.isEmpty
-                              ? AppColors.textMuted
-                              : Colors.white,
-                        ),
-                      ),
-                      if (selectedRoles.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward_rounded, size: 20),
-                      ],
-                    ],
-                  ),
-                ),
-              ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.2),
-
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
