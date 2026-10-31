@@ -11,7 +11,7 @@ class BookNowSection extends StatelessWidget {
 
   static const _tiles = [
     (type: BookingType.project, icon: Icons.folder_special_rounded, caption: 'Farm projects'),
-    (type: BookingType.product, icon: Icons.storefront_rounded, caption: 'Inputs & structures'),
+    (type: BookingType.product, icon: Icons.storefront_rounded, caption: 'Farm inputs'),
     (type: BookingType.service, icon: Icons.design_services_rounded, caption: 'Expert support'),
     (type: BookingType.course, icon: Icons.school_rounded, caption: 'Training'),
   ];
