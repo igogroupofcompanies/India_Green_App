@@ -115,8 +115,8 @@ class DashboardShell extends ConsumerWidget {
               ),
               if (unreadCount > 0)
                 Positioned(
-                  right: 8,
-                  top: 8,
+                  right: 4,
+                  top: 4,
                   child: Container(
                     padding: const EdgeInsets.all(3),
                     decoration: const BoxDecoration(

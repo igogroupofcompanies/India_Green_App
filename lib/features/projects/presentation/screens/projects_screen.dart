@@ -146,7 +146,7 @@ class _ProjectCard extends StatelessWidget {
                         Text(subtitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium
+                            style: theme.textTheme.bodySmall
                                 ?.copyWith(color: Colors.white70)),
                       ],
                     ),
