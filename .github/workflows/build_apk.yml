@@ -1,7 +1,8 @@
 name: Build APK
 
 # Builds a release APK and attaches it to the run as an artifact.
-# Needs repo secrets SUPABASE_URL and SUPABASE_ANON_KEY (anon key only).
+# Uses the public Supabase URL/anon key by default; secrets SUPABASE_URL and
+# SUPABASE_ANON_KEY override them.
 # Optional: SENTRY_DSN, and ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD /
 # ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD for a properly signed build
 # (without them the APK is debug-signed: fine for testing, not for the Play Store).
@@ -41,16 +42,15 @@ jobs:
           flutter-version: '3.47.8'
           channel: 'stable'
 
+      # The Supabase URL and anon key are public by design (they ship inside every
+      # copy of the app; access is enforced by RLS), so they are defaults here.
+      # Repository secrets of the same name override them.
       - name: Write .env
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://ktgaqyooycmgxmlpuefk.supabase.co' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Z2FxeW9veWNtZ3htbHB1ZWZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDYxNjQsImV4cCI6MjA5NjgyMjE2NH0.SYwe57uNxaH_UW1R5vYcvOVucGmWWigtJdlT7IIRVgE' }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "::error::Add SUPABASE_URL and SUPABASE_ANON_KEY as repository secrets (Settings > Secrets and variables > Actions)."
-            exit 1
-          fi
           {
             echo "SUPABASE_URL=$SUPABASE_URL"
             echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
