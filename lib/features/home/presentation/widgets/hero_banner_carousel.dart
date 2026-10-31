@@ -48,7 +48,7 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
     return Column(
       children: [
         AspectRatio(
-          aspectRatio: 1.9,
+          aspectRatio: 948 / 480, // the artwork's own ratio, so nothing is cropped
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: PageView(

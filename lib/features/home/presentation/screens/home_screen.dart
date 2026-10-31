@@ -6,6 +6,7 @@ import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../onboarding/providers/auth_provider.dart';
+import '../widgets/book_now_section.dart';
 import '../widgets/brand_carousel.dart';
 import '../widgets/hero_banner_carousel.dart';
 import '../widgets/welcome_card.dart';
@@ -33,6 +34,8 @@ class HomeScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           const HeroBannerCarousel(),
+          const SizedBox(height: 28),
+          const BookNowSection(),
           const SizedBox(height: 28),
           Text('IGO GROUPS',
               style: theme.textTheme.headlineLarge

@@ -6,7 +6,6 @@ import 'route_names.dart';
 import 'route_transitions.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/onboarding/presentation/screens/language_selection_screen.dart';
-import '../../features/onboarding/presentation/screens/role_selection_screen.dart';
 import '../../features/onboarding/presentation/screens/otp_login_screen.dart';
 import '../../features/onboarding/presentation/screens/user_details_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_shell.dart';
@@ -76,11 +75,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.languageSelect,
         pageBuilder: (context, state) =>
             slideUpTransition(const LanguageSelectionScreen(), state),
-      ),
-      GoRoute(
-        path: Routes.roleSelect,
-        pageBuilder: (context, state) =>
-            slideUpTransition(const RoleSelectionScreen(), state),
       ),
       GoRoute(
         path: Routes.otpLogin,

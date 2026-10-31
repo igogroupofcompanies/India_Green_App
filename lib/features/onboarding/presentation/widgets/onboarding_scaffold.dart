@@ -20,7 +20,7 @@ class OnboardingScaffold extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
-    this.totalSteps = 4,
+    this.totalSteps = 3,
     this.bottom,
     this.onBack,
   });

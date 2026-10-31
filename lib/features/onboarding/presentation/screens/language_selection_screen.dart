@@ -65,6 +65,7 @@ class _LanguageSelectionScreenState
 
     return OnboardingScaffold(
       step: 1,
+      totalSteps: 3,
       title: l10n.selectLanguage,
       subtitle: l10n.selectLanguageSubtitle,
       bottom: SizedBox(
@@ -74,7 +75,7 @@ class _LanguageSelectionScreenState
           onPressed: () {
             ref.read(localeProvider.notifier).setLanguage(_selected);
             ref.read(authProvider.notifier).setLanguage(_selected);
-            context.go(Routes.roleSelect);
+            context.go(Routes.otpLogin);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.harvestGold,

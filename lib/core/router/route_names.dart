@@ -3,7 +3,6 @@ abstract final class Routes {
   // ── Unauthenticated ──────────────────
   static const splash         = '/splash';
   static const languageSelect = '/onboarding/language';
-  static const roleSelect     = '/onboarding/roles';
   static const otpLogin       = '/onboarding/otp-login';
   static const userDetails    = '/onboarding/user-details';
 

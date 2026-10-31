@@ -72,7 +72,8 @@ class _UserDetailsScreenState extends ConsumerState<UserDetailsScreen> {
     });
 
     return OnboardingScaffold(
-      step: 4,
+      step: 3,
+      totalSteps: 3,
       title: l10n.userDetailsTitle,
       subtitle: l10n.userDetailsSubtitle,
       bottom: SizedBox(

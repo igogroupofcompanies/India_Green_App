@@ -121,10 +121,11 @@ class _OtpLoginScreenState extends ConsumerState<OtpLoginScreen> {
     });
 
     return OnboardingScaffold(
-      step: 3,
+      step: 2,
+      totalSteps: 3,
       title: l10n.loginWithOtp,
       subtitle: 'Verify your mobile number to access all features',
-      onBack: () => context.go(Routes.roleSelect),
+      onBack: () => context.go(Routes.languageSelect),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
         child: Column(
